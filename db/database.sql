@@ -1,4 +1,3 @@
-
 create database pxldb;
 \c pxldb
 
