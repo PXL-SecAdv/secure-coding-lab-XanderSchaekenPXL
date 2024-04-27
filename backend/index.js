@@ -42,9 +42,9 @@ app.get('/authenticate/:username/:password', async (request, response) => {
         try {
             const match = await bcrypt.compare(password, hashedPassword);
             if (match) {
-                response.status(200).json({ message: "Authentication successful>
+                response.status(200).json({ message: "Authentication successful." });
             } else {
-                response.status(401).json({ message: "Authentication failed. In>
+                response.status(401).json({ message: "Authentication failed. Incorrect password." });
             }
         } catch (err) {
             response.status(500).json({ message: "Internal server error." });
@@ -55,3 +55,4 @@ app.get('/authenticate/:username/:password', async (request, response) => {
 app.listen(port, () => {
     console.log(`App running on port ${port}.`);
 });
+
