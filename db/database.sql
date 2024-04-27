@@ -1,14 +1,22 @@
-create database pxldb;
-\c pxldb
+CREATE DATABASE pxldb;
+\c pxldb;
 
-create user secadv with password 'ilovesecurity';
-grant all privileges on database pxldb to secadv;
+CREATE EXTENSION IF NOT EXISTS pgcrypto; 
+
+CREATE USER secadv WITH PASSWORD 'ilovesecurity';
+GRANT ALL PRIVILEGES ON DATABASE pxldb TO secadv;
+
 BEGIN;
 
-create table users (id serial primary key, user_name text not null unique, password_hash text not null);
-grant all privileges on table users to secadv;
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    user_name TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+);
 
-insert into users (user_name, password_hash) values ('pxl-admin', 'insecureandlovinit') ;
-insert into users (user_name, password_hash) values ('george', 'iwishihadbetteradmins') ;
+GRANT ALL PRIVILEGES ON TABLE users TO secadv;
+
+INSERT INTO users (user_name, password) VALUES ('pxl-admin', crypt('insecureand>
+INSERT INTO users (user_name, password) VALUES ('george', crypt('iwishihadbette>
 
 COMMIT;
