@@ -31,28 +31,27 @@ app.get('/authenticate/:username/:password', async (request, response) => {
     const password = request.params.password;
 
     const query = `SELECT * FROM users WHERE user_name=$1`;
-    pool.query(query, [username], async (error, results) => {
-        if (error) {
-            throw error;
+    try {
+        const result = await pool.query(query, [username]);
+        const user = result.rows[0];
+        if (!user) {
+            response.status(401).json({ message: "Authentication failed. User not found." });
+            return;
         }
-
-        const user = results.rows[0];
         const hashedPassword = user.password;
 
-        try {
-            const match = await bcrypt.compare(password, hashedPassword);
-            if (match) {
-                response.status(200).json({ message: "Authentication successful." });
-            } else {
-                response.status(401).json({ message: "Authentication failed. Incorrect password." });
-            }
-        } catch (err) {
-            response.status(500).json({ message: "Internal server error." });
+        const match = await bcrypt.compare(password, hashedPassword);
+        if (match) {
+            response.status(200).json({ message: "Authentication successful." });
+        } else {
+            response.status(401).json({ message: "Authentication failed. Incorrect password." });
         }
-    });
+    } catch (error) {
+        console.error("Error while authenticating:", error);
+        response.status(500).json({ message: "Internal server error." });
+    }
 });
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`);
 });
-
